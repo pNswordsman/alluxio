@@ -245,35 +245,19 @@ user	0m7.557s
 sys	0m1.181s
 ```
 
-取决于你的网络连接状况，该操作可能会超过20秒。如果读取文件时间过长，你可以选择一个小一点的数据集。该目录下的其他文件是该文件的更小子集。
+取决于你的网络连接状况，该操作可能会超过20秒。如果读取文件时间过长，你可以选择一个小一点的数据集。该目录下的其他文件是该文件的更小子集。正如你
+所看到的那样，每个命令都花费了大量的时间获取数据。 Alluxio可以通过将数据缓存到内存中来加速访问。
 
-现在，让我们看一下有多少tweet包含单词"puppy"。
-
-```bash
-$ time ./bin/alluxio fs cat /mnt/s3/sample_tweets_150m.csv | grep -c puppy
-1553
-
-real	0m25.998s
-user	0m6.828s
-sys	0m1.048s
-```
-
-正如你看见的，每个命令花费大量的时间访问数据。Alluxio使用内存存储这些数据来加速数据访问。`cat`命令不能缓存数据到Alluxio内存中。另外一个命令`load`可以告诉Alluxio存储数据到内存中。你可以使用如下命令告诉Alluxio加载数据到内存中。
-
-```bash
-$ ./bin/alluxio fs load /mnt/s3/sample_tweets_150m.csv
-```
-
-加载完文件之后，使用`ls`命令检查其状态：
+通过`cat`命令查看完文件的内容后，现在我们可以通过`ls`查看文件的信息。
 
 ```bash
 $ ./bin/alluxio fs ls /mnt/s3/sample_tweets_150m.csv
 -r-x------ staff  staff 157046046 PERSISTED 01-09-2018 16:35:01:002 100% /mnt/s3/sample_tweets_150m.csv
 ```
 
-输出显示文件已被Alluxio完全加载。既然文件在Alluxio中，读文件应该会更快。
+输出显示文件已经100%被加载进入Alluxio中了。现在读文件的速度将会快得多。
 
-我们统计一下包含"puppy"的tweet数量。
+现在让我们来统计一下包含"puppy"这个单词的微博的数量。
 
 ```bash
 $ time ./bin/alluxio fs cat /mnt/s3/sample_tweets_150m.csv | grep -c puppy
